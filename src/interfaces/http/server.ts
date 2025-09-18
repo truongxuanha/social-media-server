@@ -1,6 +1,8 @@
 import { prisma } from "../../infrastructure/databases/prisma";
 import { createTerminus } from "@godaddy/terminus";
 import { Application } from "express";
+import path from "path";
+import express from "express";
 
 export default function serverConfig(app: Application, config: any) {
   async function healthCheck() {
@@ -42,8 +44,14 @@ export default function serverConfig(app: Application, config: any) {
     };
 
     createTerminus(app, options);
+    
+    app.use(express.static(path.join(__dirname, "public")));
+    
+    app.get("/", (req, res) => {
+      res.sendFile(path.join(__dirname, "public", "index.html"));
+    });
     app.listen(config.port, () => {
-      console.log(`Server is running on port ${config.port}`);
+      console.log(`Server is running on port http://localhost:${config.port}`);
     });
   }
   return { startServer };

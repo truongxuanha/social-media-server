@@ -36,7 +36,9 @@ export class User {
     }
     return updatedUser;
   }
-
+  get id(): string {
+    return this._id;
+  }
   get name(): string {
     return this._name;
   }
@@ -48,12 +50,18 @@ export class User {
   get password(): string {
     return this._password;
   }
+  get createdAt(): Date {
+    return this._createdAt;
+  }
+  get updatedAt(): Date {
+    return this._updatedAt;
+  }
 
   constructor(props: IUser) {
+    this._id = props.id;
     this._name = props.name;
     this._password = props.password;
     this._email = props.email;
-    this._id = props.id;
     this._createdAt = props.createdAt;
     this._updatedAt = props.updatedAt;
   }

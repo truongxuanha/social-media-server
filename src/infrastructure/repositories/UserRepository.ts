@@ -1,30 +1,11 @@
 import { PrismaClient } from "@prisma/client";
-import { IUserRepository } from "../../application/repositories/IUserRepository";
 import { User } from "../../domain/entities/user.entity";
 import { Email } from "../../domain/value-objects/email.vo";
+import { IUserRepository } from "@/application/repositories/IUserRepository";
 
 export class UserRepository implements IUserRepository {
   constructor(private prisma: PrismaClient) {}
 
-  async create(user: User): Promise<User> {
-    const createdUser = await this.prisma.user.create({
-      data: {
-        name: user.name,
-        email: user.email.address,
-        password: user.password,
-      },
-    });
-    console.log(createdUser);
-
-    return new User({
-      id: createdUser.id,
-      name: createdUser.name,
-      email: new Email({ address: createdUser.email }),
-      password: createdUser.password,
-      createdAt: createdUser.createdAt,
-      updatedAt: createdUser.updatedAt,
-    });
-  }
 
   async findByEmail(email: string): Promise<User | null> {
     const user = await this.prisma.user.findUnique({

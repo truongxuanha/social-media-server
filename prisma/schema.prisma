@@ -18,6 +18,10 @@ model User {
   id        String   @id @default(uuid())
   name      String
   email     String   @unique
+  avatar    String?
+  address   String?
+  phone     String?
+  status    Int @default(0)
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
