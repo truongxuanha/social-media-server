@@ -1,17 +1,14 @@
 import { Router } from "express";
 import { UserController } from "../controllers/UserController";
-import { CreateUserUseCase } from "../../../application/use-case/CreateUserUseCase";
-import { UserRepository } from "../../../infrastructure/repositories/UserRepository";
 import { prisma } from "../../../infrastructure/databases/prisma";
+import { GetUserInfoUseCase } from "../../../application/use-case/GetUserInfoUseCase";
+import { UserRepository } from "../../../infrastructure/repositories/UserRepository";
 
-// Khởi tạo dependencies
 const userRepository = new UserRepository(prisma);
-const createUserUseCase = new CreateUserUseCase(userRepository);
-const userController = new UserController(createUserUseCase);
-
+const getUserInfoUseCase = new GetUserInfoUseCase(userRepository);
+const userController = new UserController(getUserInfoUseCase);
 const userRoutes = Router();
 
-// Route đăng ký user
-userRoutes.post("/register", (req, res) => userController.createUser(req, res));
+userRoutes.get("/:id", userController.getUserInfo);
 
 export default userRoutes;

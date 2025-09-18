@@ -1,68 +1,41 @@
+import { GetUserInfoUseCase } from "@/application/use-case/GetUserInfoUseCase";
 import { Request, Response } from "express";
-import { CreateUserUseCase } from "../../../application/use-case/CreateUserUseCase";
-import { ICreateUserRequestDTO } from "../../../domain/dtos/ICreateUserRequestDTO";
 
 export class UserController {
-  constructor(private createUserUseCase: CreateUserUseCase) {}
+  constructor(private getUserInfoUseCase: GetUserInfoUseCase) {}
 
-  async createUser(req: Request, res: Response): Promise<void> {
+  async getUserInfo(req: Request, res: Response): Promise<void> {
     try {
-      const userData: ICreateUserRequestDTO = req.body;
-      console.log(userData);
-      // Validation cơ bản
-      if (!userData.name || !userData.email || !userData.password) {
+      const userId = req.params.id;
+
+      if (!userId) {
         res.status(400).json({
           success: false,
-          message: "Vui lòng cung cấp đầy đủ thông tin: name, email, password",
+          message: "error:user:required_id",
         });
         return;
       }
 
-      // Kiểm tra độ dài password
-      if (userData.password.length < 6) {
-        res.status(400).json({
+      const result = await this.getUserInfoUseCase.execute(userId);
+
+      if (!result.success) {
+        res.status(404).json({
           success: false,
-          message: "Mật khẩu phải có ít nhất 6 ký tự",
+          message: result.message,
         });
         return;
       }
 
-      const result = await this.createUserUseCase.execute(userData);
-
-      res.status(201).json({
+      res.status(200).json({
         success: true,
         message: result.message,
-        data: {
-          user: {
-            name: result.user.name,
-            email: result.user.email,
-          },
-        },
+        data: result.data,
       });
     } catch (error) {
-      console.error("Lỗi khi tạo user:", error);
-
-      if (error instanceof Error) {
-        if (error.message === "Email đã được sử dụng") {
-          res.status(409).json({
-            success: false,
-            message: error.message,
-          });
-          return;
-        }
-
-        if (error.message === "Invalid email format") {
-          res.status(400).json({
-            success: false,
-            message: "Định dạng email không hợp lệ",
-          });
-          return;
-        }
-      }
-
+      console.error("Lỗi khi lấy thông tin user:", error);
       res.status(500).json({
         success: false,
-        message: "Lỗi server nội bộ",
+        message: "error:server",
       });
     }
   }
