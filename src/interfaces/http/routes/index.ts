@@ -7,5 +7,4 @@ const router = Router();
 router.use("/api/users", userRoutes);
 router.use("/api/auth", authRoutes);
 
-
 export default router;
