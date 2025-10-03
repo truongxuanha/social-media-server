@@ -5,6 +5,7 @@ export interface ICreateUserRequestDTO {
   name: string;
   email: string;
   password: string;
+  role: string;
 }
 
 export interface IUserResponseDTO {

@@ -22,7 +22,7 @@ export class AuthRepository implements IAuthRepository {
       password: createdUser.password,
       createdAt: createdUser.createdAt,
       updatedAt: createdUser.updatedAt,
+      role: createdUser.role,
     });
   }
-
 }

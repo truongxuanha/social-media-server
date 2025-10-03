@@ -10,21 +10,21 @@ export default function serverConfig(app: Application, config: any) {
       await prisma.$queryRaw`SELECT 1`;
       return Promise.resolve();
     } catch (err) {
-      return Promise.reject(new Error("PostgreSQL is not connected"));
+      return Promise.reject(new Error(err as string));
     }
   }
 
   async function onSignal() {
     try {
       await prisma.$disconnect();
-      console.log("MongoDB disconnected");
+      console.error("MongoDB disconnected");
     } catch (err) {
       console.error("Error disconnecting from MongoDB", err);
     }
   }
 
   function beforeShutdown() {
-    return new Promise((resolve) => {
+    return new Promise(resolve => {
       setTimeout(resolve, config.shutdownDelay || 5000);
     });
   }
@@ -44,9 +44,9 @@ export default function serverConfig(app: Application, config: any) {
     };
 
     createTerminus(app, options);
-    
+
     app.use(express.static(path.join(__dirname, "public")));
-    
+
     app.get("/", (req, res) => {
       res.sendFile(path.join(__dirname, "public", "index.html"));
     });
