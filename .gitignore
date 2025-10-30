@@ -4,3 +4,4 @@ node_modules
 dist
 generated
 /generated/prisma
+principle_solid.md

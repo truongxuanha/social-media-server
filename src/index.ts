@@ -5,10 +5,11 @@ import configs from "./shared/configs";
 import router from "./interfaces/http/routes";
 import dotenv from "dotenv";
 import "./shared/configs/alias";
+import { createServer } from "http";
 
 dotenv.config();
 const app = express();
-const server = require("http").createServer(app);
+const server = createServer(app);
 
 expressConfig(app);
 

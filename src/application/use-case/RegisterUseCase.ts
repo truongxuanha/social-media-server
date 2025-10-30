@@ -6,7 +6,10 @@ import { IUserRepository } from "../repositories/IUserRepository";
 import MESSAGE from "@/shared/contants/message";
 
 export class RegisterUseCase {
-  constructor(private authRepository: IAuthRepository, private userRepository: IUserRepository,) {}
+  constructor(
+    private authRepository: IAuthRepository,
+    private userRepository: IUserRepository
+  ) {}
 
   async execute(
     userData: ICreateUserRequestDTO
@@ -25,11 +28,11 @@ export class RegisterUseCase {
     });
 
     const createdUser = await this.authRepository.register(user);
-
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...userWithoutPassword } = createdUser;
 
     return {
-      user: userWithoutPassword as Omit<User, "password">,
+      user: { ...userWithoutPassword } as Omit<User, "password">,
       message: MESSAGE.AUTH.CREATE_SUCCESS,
     };
   }

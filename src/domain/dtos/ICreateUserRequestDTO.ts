@@ -1,10 +1,10 @@
+import { Role } from "../enums/role.enum";
+
 export interface ICreateUserRequestDTO {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
   name: string;
   email: string;
   password: string;
+  role?: Role;
 }
 
 export interface IUserResponseDTO {

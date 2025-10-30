@@ -31,8 +31,8 @@ export class UserController {
         message: result.message,
         data: result.data,
       });
-    } catch (error) {
-      console.error("Lỗi khi lấy thông tin user:", error);
+    } catch (_error) {
+      console.error(_error);
       res.status(500).json({
         success: false,
         message: "error:server",

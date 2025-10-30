@@ -8,8 +8,8 @@ export default function connection(redis: RedisClientType, config: any) {
     console.log("Connected to Redis!");
   });
 
-  createRedisClient().on("error", (err) => {
-    console.log(`Error  ${err}`);
+  createRedisClient().on("error", err => {
+    console.error(err);
   });
 
   return {

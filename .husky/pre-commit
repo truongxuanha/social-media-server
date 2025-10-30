@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+[ -t 0 ] || exit 0
+npx lint-staged
+yarn lint

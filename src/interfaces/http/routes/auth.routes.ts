@@ -4,15 +4,23 @@ import { UserRepository } from "@/infrastructure/repositories/UserRepository";
 import { Router } from "express";
 import { AuthController } from "../controllers/AuthController";
 import { prisma } from "@/infrastructure/databases/prisma";
-
+import { ValiationMiddleware } from "../middlewares/validation.middlware";
 
 const authRepository = new AuthRepository(prisma);
 const userRepository = new UserRepository(prisma);
 const registerUseCase = new RegisterUseCase(authRepository, userRepository);
 const authController = new AuthController(registerUseCase);
+const validationzMiddleware = new ValiationMiddleware();
 
 const authRoutes = Router();
 
-authRoutes.post("/register", (req, res) => authController.register(req, res));
+const bindValidateRequiredFields =
+  validationzMiddleware.validateRequiredFields.bind(validationzMiddleware);
+
+authRoutes.post(
+  "/register",
+  bindValidateRequiredFields(["name", "email", "password"]),
+  authController.register.bind(authController)
+);
 
 export default authRoutes;
