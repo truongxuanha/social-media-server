@@ -1,4 +1,4 @@
-  import { RegisterUseCase } from "@/application/use-case/RegisterUseCase";
+import { RegisterUseCase } from "@/application/use-case/RegisterUseCase";
 import { ICreateUserRequestDTO } from "@/domain/dtos/ICreateUserRequestDTO";
 import MESSAGE from "@/shared/contants/message";
 import { Request, Response } from "express";
@@ -9,18 +9,10 @@ export class AuthController {
   async register(req: Request, res: Response): Promise<void> {
     try {
       const userData: ICreateUserRequestDTO = req.body;
-      if (!userData.name || !userData.email || !userData.password) {
-        res.status(400).json({
-          success: false,
-          message: "Vui lòng cung cấp đầy đủ thông tin: name, email, password",
-        });
-        return;
-      }
-
       if (userData.password.length < 6) {
         res.status(400).json({
           success: false,
-          message: "error:password_length_min",
+          message: MESSAGE.AUTH.PASSWORD_LENGTH_MIN,
         });
         return;
       }
@@ -32,6 +24,7 @@ export class AuthController {
         message: result.message,
       });
     } catch (error) {
+      console.error("Error in AuthController.register:", error);
       if (error instanceof Error) {
         if (error.message === MESSAGE.AUTH.EMAIL_ALREADY_USED) {
           res.status(409).json({
@@ -52,7 +45,7 @@ export class AuthController {
 
       res.status(500).json({
         success: false,
-        message: "error:server",
+        message: MESSAGE.SERVER.INTERNAL_ERROR,
       });
     }
   }

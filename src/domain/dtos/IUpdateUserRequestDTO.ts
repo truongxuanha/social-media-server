@@ -1,8 +1,8 @@
-export default interface IUpdateUserRequestDTO {
-  id?: string;
+import { Role } from "../enums/role.enum";
+
+export interface IUpdateUserRequestDTO {
   name?: string;
   email?: string;
   password?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  role?: Role;
 }

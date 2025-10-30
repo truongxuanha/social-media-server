@@ -1,5 +1,6 @@
 import { ICreateUserRequestDTO } from "../dtos/ICreateUserRequestDTO";
-import IUpdateUserRequestDTO from "../dtos/IUpdateUserRequestDTO";
+import { IUpdateUserRequestDTO } from "../dtos/IUpdateUserRequestDTO";
+import { Role } from "../enums/role.enum";
 import { IUser } from "../interfaces/user.interface";
 import { Email } from "../value-objects/email.vo";
 
@@ -10,23 +11,23 @@ export class User {
   private _password: string;
   private _createdAt: Date;
   private _updatedAt: Date;
+  private _role: string;
 
   static create({
-    id,
     email,
     name,
     password,
-    createdAt,
-    updatedAt,
+    role = Role.USER,
   }: ICreateUserRequestDTO) {
     const newEmail = new Email({ address: email });
     return new User({
-      id,
-      createdAt,
-      updatedAt,
+      id: crypto.randomUUID(),
       name,
       email: newEmail,
       password,
+      role,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     });
   }
 
@@ -56,7 +57,9 @@ export class User {
   get updatedAt(): Date {
     return this._updatedAt;
   }
-
+  get role(): string {
+    return this._role;
+  }
   constructor(props: IUser) {
     this._id = props.id;
     this._name = props.name;
@@ -64,5 +67,6 @@ export class User {
     this._email = props.email;
     this._createdAt = props.createdAt;
     this._updatedAt = props.updatedAt;
+    this._role = props.role;
   }
 }

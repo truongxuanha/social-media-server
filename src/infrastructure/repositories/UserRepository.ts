@@ -6,7 +6,6 @@ import { IUserRepository } from "@/application/repositories/IUserRepository";
 export class UserRepository implements IUserRepository {
   constructor(private prisma: PrismaClient) {}
 
-
   async findByEmail(email: string): Promise<User | null> {
     const user = await this.prisma.user.findUnique({
       where: { email },
@@ -21,6 +20,7 @@ export class UserRepository implements IUserRepository {
       password: user.password,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
+      role: user.role,
     });
   }
 
@@ -37,7 +37,8 @@ export class UserRepository implements IUserRepository {
       email: new Email({ address: user.email }),
       password: user.password,
       createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
+      updatedAt: user.updatedAt,  
+      role: user.role,
     });
   }
 }
