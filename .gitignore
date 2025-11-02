@@ -5,3 +5,5 @@ dist
 generated
 /generated/prisma
 principle_solid.md
+/mongo-data
+/docker

@@ -5,6 +5,7 @@
     "clean": "rimraf dist",
     "prisma:generate": "npx prisma generate --schema=./prisma/schema.prisma",
     "prisma:push": "prisma db push --schema=./prisma/schema.prisma",
+    "mongo:start": "mongod --port 27017 --dbpath \"C:\\data\\db\" --replSet rs0 --bind_ip localhost",
     "build:ts": "tsc",
     "build": "npm-run-all clean build:prisma build:ts",
     "lint": "eslint \"src/**/*.{ts,js}\"",
