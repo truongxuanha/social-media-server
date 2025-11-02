@@ -5,7 +5,6 @@ const envSchema = z.object({
     .enum(["development", "test", "production"])
     .default("development"),
   DATABASE_URL: z.string().url(),
-  AUTH_SECRET: z.string(),
   JWT_SECRET: z.string(),
   PORT: z.string().optional(),
   IP: z.string().optional(),
@@ -15,10 +14,19 @@ const envSchema = z.object({
 const parsed = envSchema.safeParse(process.env);
 
 if (!parsed.success) {
+  const errors = parsed.error.issues
+    .map(err => {
+      const path = err.path.join(".");
+      return `  - ${path}: ${err.message}`;
+    })
+    .join("\n");
+
+  console.error("Environment validation failed:");
+  console.error(errors);
   throw new Error("Environment validation failed");
 }
 
-export const env = parsed.data;
+export const env: z.infer<typeof envSchema> = parsed.data;
 
 export const envRequired = <K extends keyof typeof env>(name: K): string => {
   const value = env[name];

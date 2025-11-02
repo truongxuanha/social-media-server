@@ -1,5 +1,6 @@
 import { GetUserInfoUseCase } from "@/application/use-case/GetUserInfoUseCase";
 import { Request, Response } from "express";
+import Logger from "@/shared/utils/logger";
 
 export class UserController {
   constructor(private getUserInfoUseCase: GetUserInfoUseCase) {}
@@ -32,7 +33,7 @@ export class UserController {
         data: result.data,
       });
     } catch (_error) {
-      console.error(_error);
+      Logger.error("Error in UserController.getUserInfo", _error);
       res.status(500).json({
         success: false,
         message: "error:server",

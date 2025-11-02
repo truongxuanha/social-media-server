@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { IJwtService } from "@/services/jwt.service";
 import MESSAGE from "@/shared/contants/message";
+import Logger from "@/shared/utils/logger";
 
 export class TokenMiddleware {
   constructor(private jwtService: IJwtService) {}
@@ -27,7 +28,7 @@ export class TokenMiddleware {
       (req as any).user = decoded;
       next();
     } catch (error) {
-      console.error(error);
+      Logger.error("Token verification failed", error);
       return this.sendForbidden(res);
     }
   }
