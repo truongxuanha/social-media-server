@@ -1,21 +1,20 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id        String   @id @default(uuid())
+  id        String   @id @default(uuid()) @map("_id")
   name      String
   email     String   @unique
   avatar    String?
   password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  @@map("users")
+  role      String   @default("USER") @map("role")
+  @@map("user")
 }

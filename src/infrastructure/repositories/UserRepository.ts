@@ -37,7 +37,7 @@ export class UserRepository implements IUserRepository {
       email: new Email({ address: user.email }),
       password: user.password,
       createdAt: user.createdAt,
-      updatedAt: user.updatedAt,  
+      updatedAt: user.updatedAt,
       role: user.role,
     });
   }

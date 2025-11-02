@@ -3,8 +3,8 @@ import { AuthRepository } from "@/infrastructure/repositories/AuthRepository";
 import { UserRepository } from "@/infrastructure/repositories/UserRepository";
 import { Router } from "express";
 import { AuthController } from "../controllers/AuthController";
-import { prisma } from "@/infrastructure/databases/prisma";
 import { ValiationMiddleware } from "../middlewares/validation.middlware";
+import prisma from "@/infrastructure/databases/prisma";
 
 const authRepository = new AuthRepository(prisma);
 const userRepository = new UserRepository(prisma);
