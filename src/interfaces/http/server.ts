@@ -1,13 +1,14 @@
-import { prisma } from "@/infrastructure/databases/prisma";
+import prisma from "@/infrastructure/databases/prisma";
 import { createTerminus } from "@godaddy/terminus";
 import { Application } from "express";
 import path from "path";
 import express from "express";
+import Logger from "@/shared/utils/logger";
 
 export default function serverConfig(app: Application, config: any) {
   async function healthCheck() {
     try {
-      await prisma.$queryRaw`SELECT 1`;
+      await prisma.$connect();
       return Promise.resolve();
     } catch (err) {
       return Promise.reject(new Error(err as string));
@@ -17,9 +18,9 @@ export default function serverConfig(app: Application, config: any) {
   async function onSignal() {
     try {
       await prisma.$disconnect();
-      console.error("MongoDB disconnected");
+      Logger.info("MongoDB disconnected");
     } catch (err) {
-      console.error("Error disconnecting from MongoDB", err);
+      Logger.error("Error disconnecting from MongoDB", err);
     }
   }
 
@@ -34,7 +35,13 @@ export default function serverConfig(app: Application, config: any) {
 
   function startServer() {
     const options = {
-      logger: console.log,
+      logger: (msg: string, err?: Error) => {
+        if (err) {
+          Logger.error(msg, err);
+        } else {
+          Logger.info(msg);
+        }
+      },
       signal: "SIGINT",
       healthChecks: { "/healthcheck": healthCheck },
       timeout: 1000,
@@ -51,7 +58,7 @@ export default function serverConfig(app: Application, config: any) {
       res.sendFile(path.join(__dirname, "public", "index.html"));
     });
     app.listen(config.port, () => {
-      console.log(`Server is running on port http://localhost:${config.port}`);
+      Logger.info(`Server is running on port http://localhost:${config.port}`);
     });
   }
   return { startServer };

@@ -2,6 +2,7 @@ const MESSAGE = {
   COMMON: {
     NOT_FOUND: "error.common.not_found",
     REQUIRED_FIELD: "error.common:required_field",
+    VALIDATION_ERROR: "error.common.validation_error",
   },
   AUTH: {
     EMAIL_ALREADY_USED: "error.auth.email_already_used",
