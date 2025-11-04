@@ -1,13 +1,14 @@
 {
   "scripts": {
-    "start": "node -r tsconfig-paths/register dist/index.js",
+    "start": "node dist/index.js",
     "dev": "ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/index.ts",
     "clean": "rimraf dist",
     "prisma:generate": "npx prisma generate --schema=./prisma/schema.prisma",
     "prisma:push": "prisma db push --schema=./prisma/schema.prisma",
     "mongo:start": "mongod --port 27017 --dbpath \"C:\\data\\db\" --replSet rs0 --bind_ip localhost",
     "build:ts": "tsc",
-    "build": "npm-run-all clean prisma:generate build:ts",
+    "build:alias": "tsc-alias",
+    "build": "npm-run-all clean prisma:generate build:ts build:alias",
     "lint": "eslint \"src/**/*.{ts,js}\"",
     "lint:fix": "eslint \"src/**/*.{ts,js}\" --fix",
     "format": "prettier --write \"src/**/*.{ts,js,json,md}\"",

@@ -5,7 +5,12 @@ import bodyParser from "body-parser";
 import morgan from "morgan";
 
 export default function expressConfig(app: Application) {
-  app.use(helmet());
+  app.use(
+    helmet({
+      crossOriginResourcePolicy: { policy: "cross-origin" },
+      crossOriginEmbedderPolicy: false,
+    })
+  );
 
   app.use(compression());
 
@@ -20,14 +25,38 @@ export default function expressConfig(app: Application) {
   );
 
   app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    const allowedOrigins = process.env.CORS_ORIGINS?.split(",") || ["*"];
+
+    if (
+      allowedOrigins.includes("*") ||
+      (origin && allowedOrigins.includes(origin))
+    ) {
+      res.setHeader("Access-Control-Allow-Origin", origin || "*");
+    }
+
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+
     res.setHeader(
-      "Access-Control-Allow-Origin",
-      "GET, POST, PUT, DELETE, PATCH"
+      "Access-Control-Allow-Methods",
+      "GET, POST, PUT, DELETE, PATCH, OPTIONS"
     );
+
     res.setHeader(
       "Access-Control-Allow-Headers",
-      "X-Requested-With,content-type,Authorization, Cache-control, Pragma"
+      "X-Requested-With, Content-Type, Authorization, Cache-Control, Pragma, Accept, Origin"
     );
+
+    res.setHeader(
+      "Access-Control-Expose-Headers",
+      "Authorization, Content-Length, X-Requested-With"
+    );
+
+    // Xử lý preflight OPTIONS request
+    if (req.method === "OPTIONS") {
+      return res.sendStatus(200);
+    }
+
     next();
   });
   app.use(morgan("combined"));
