@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { IJwtService } from "@/services/jwt.service";
 import MESSAGE from "@/shared/contants/message";
-import Logger from "@/shared/utils/logger";
+import Logger from "@/interfaces/http/logger/logger";
 
 export class TokenMiddleware {
   constructor(private jwtService: IJwtService) {}

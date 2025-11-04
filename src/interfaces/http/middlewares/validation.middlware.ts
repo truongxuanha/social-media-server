@@ -18,15 +18,13 @@ export class ValiationMiddleware {
             message: err.message,
           }));
 
-          return res.status(400).json({
-            success: false,
+          return res.status(422).json({
             message: MESSAGE.COMMON.VALIDATION_ERROR || "Validation failed",
             errors: errors,
           });
         }
 
         return res.status(500).json({
-          success: false,
           message: MESSAGE.SERVER.INTERNAL_ERROR,
         });
       }
@@ -46,15 +44,13 @@ export class ValiationMiddleware {
             message: err.message,
           }));
 
-          return res.status(400).json({
-            success: false,
+          return res.status(422).json({
             message: "Invalid parameters",
             errors: errors,
           });
         }
 
         return res.status(500).json({
-          success: false,
           message: MESSAGE.SERVER.INTERNAL_ERROR,
         });
       }
@@ -74,15 +70,13 @@ export class ValiationMiddleware {
             message: err.message,
           }));
 
-          return res.status(400).json({
-            success: false,
+          return res.status(422).json({
             message: "Invalid query parameters",
             errors: errors,
           });
         }
 
         return res.status(500).json({
-          success: false,
           message: MESSAGE.SERVER.INTERNAL_ERROR,
         });
       }
@@ -93,9 +87,14 @@ export class ValiationMiddleware {
     return (req: Request, res: Response, next: NextFunction) => {
       const missing = fields.find(f => !req.body?.[f]);
       if (missing) {
-        return res.status(400).json({
-          success: false,
+        return res.status(422).json({
           message: MESSAGE.COMMON.REQUIRED_FIELD,
+          errors: [
+            {
+              field: missing,
+              message: MESSAGE.COMMON.REQUIRED_FIELD,
+            },
+          ],
         });
       }
       next();
