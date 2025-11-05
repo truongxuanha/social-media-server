@@ -3,6 +3,10 @@ const MESSAGE = {
     NOT_FOUND: "error.common.not_found",
     REQUIRED_FIELD: "error.common:required_field",
     VALIDATION_ERROR: "error.common.validation_error",
+    SERVER_ERROR: "error.common.server_error",
+    BAD_REQUEST: "error.common.bad_request",
+    CONFLICT: "error.common.conflict",
+    UNPROCESSABLE: "error.common.unprocessable",
   },
   AUTH: {
     EMAIL_ALREADY_USED: "error.auth.email_already_used",
@@ -14,6 +18,9 @@ const MESSAGE = {
     PASSWORD_LENGTH_MIN: "error.auth.password_length_min",
     REQUIRED_FIELD: "error.auth.required_field",
     CREATE_SUCCESS: "succes.auth.create_success",
+    ACCOUNT_NOT_EXIST: "error.auth.account_not_exist",
+    INCORRECT_PASSWORD: "error.auth.incorrect_password",
+    INCORRECT_PASSWORD_ACCOUNT: "error.auth.incorrect_password_account",
   },
 
   VALIDATION: {

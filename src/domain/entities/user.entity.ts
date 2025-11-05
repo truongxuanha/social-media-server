@@ -3,7 +3,7 @@ import { IUpdateUserRequestDTO } from "../dtos/IUpdateUserRequestDTO";
 import { Role } from "../enums/role.enum";
 import { IUser } from "../interfaces/user.interface";
 import { Email } from "../value-objects/email.vo";
-
+import bcrypt from "bcryptjs";
 export class User {
   private _id: string;
   private _name: string;
@@ -12,31 +12,16 @@ export class User {
   private _createdAt: Date;
   private _updatedAt: Date;
   private _role: string;
-
-  static create({
-    email,
-    name,
-    password,
-    role = Role.USER,
-  }: ICreateUserRequestDTO) {
-    const newEmail = new Email({ address: email });
-    return new User({
-      id: crypto.randomUUID(),
-      name,
-      email: newEmail,
-      password,
-      role,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+  constructor(props: IUser) {
+    this._id = props.id;
+    this._name = props.name;
+    this._password = props.password;
+    this._email = props.email;
+    this._createdAt = props.createdAt;
+    this._updatedAt = props.updatedAt;
+    this._role = props.role;
   }
 
-  static update(updatedUser: IUpdateUserRequestDTO) {
-    if (updatedUser.email) {
-      updatedUser.email = new Email({ address: updatedUser.email }).address;
-    }
-    return updatedUser;
-  }
   get id(): string {
     return this._id;
   }
@@ -60,13 +45,33 @@ export class User {
   get role(): string {
     return this._role;
   }
-  constructor(props: IUser) {
-    this._id = props.id;
-    this._name = props.name;
-    this._password = props.password;
-    this._email = props.email;
-    this._createdAt = props.createdAt;
-    this._updatedAt = props.updatedAt;
-    this._role = props.role;
+  static create({
+    email,
+    name,
+    password,
+    role = Role.USER,
+  }: ICreateUserRequestDTO) {
+    const newEmail = new Email({ address: email });
+    return new User({
+      id: crypto.randomUUID(),
+      name,
+      email: newEmail,
+      password,
+      role,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    });
+  }
+  static update(updatedUser: IUpdateUserRequestDTO) {
+    if (updatedUser.email) {
+      updatedUser.email = new Email({ address: updatedUser.email }).address;
+    }
+    return updatedUser;
+  }
+  static async isValidPassword(
+    inputPassword: string,
+    passwordHash: string
+  ): Promise<boolean> {
+    return bcrypt.compare(inputPassword, passwordHash);
   }
 }

@@ -1,9 +1,17 @@
 import { IAuthRepository } from "../repositories/IAuthRepository";
 import { User } from "../../domain/entities/user.entity";
-import { ICreateUserRequestDTO } from "../../domain/dtos/ICreateUserRequestDTO";
-import bcrypt from "bcryptjs";
 import { IUserRepository } from "../repositories/IUserRepository";
 import MESSAGE from "@/shared/contants/message";
+import { ICreateUserRequestDTO } from "@/domain/dtos/ICreateUserRequestDTO";
+
+interface LoginResponse {
+  data: {
+    userInfo: User;
+    accessToken: string;
+    refreshToken: string;
+  };
+  message: string;
+}
 
 export class LoginUseCase {
   constructor(
@@ -11,50 +19,45 @@ export class LoginUseCase {
     private userRepository: IUserRepository
   ) {}
 
-  async execute(userData: ICreateUserRequestDTO): Promise<{
-    data: {
-      userInfo: User;
-      token: string;
-      refreshToken: string;
+  async execute(userData: ICreateUserRequestDTO): Promise<LoginResponse> {
+    const user = await this.validateUserCredentials(userData);
+    const tokenData = await this.generateUserTokens(user);
+
+    return {
+      data: {
+        userInfo: user,
+        accessToken: tokenData.token,
+        refreshToken: tokenData.refreshToken,
+      },
+      message: MESSAGE.AUTH.CREATE_SUCCESS,
     };
-    message: string;
-  } | null> {
+  }
+
+  private async validateUserCredentials(
+    userData: ICreateUserRequestDTO
+  ): Promise<User> {
     const userInfo = await this.userRepository.findByEmail(userData.email);
     if (!userInfo) {
-      throw new Error(MESSAGE.AUTH.INVALID_CREDENTIALS);
+      throw new Error(MESSAGE.AUTH.ACCOUNT_NOT_EXIST);
     }
 
-    const hashedPassword = await bcrypt.compare(
+    const isPasswordValid = await User.isValidPassword(
       userData.password,
       userInfo.password
     );
-    if (!hashedPassword) {
-      throw new Error(MESSAGE.AUTH.INVALID_CREDENTIALS);
+
+    if (!isPasswordValid) {
+      throw new Error(MESSAGE.AUTH.INCORRECT_PASSWORD);
     }
-    const user = new User({
-      id: userInfo.id,
-      name: userInfo.name,
-      email: userInfo.email,
-      password: userInfo.password,
-      createdAt: userInfo.createdAt,
-      updatedAt: userInfo.updatedAt,
-      role: userInfo.role,
-    });
+
+    return new User(userInfo);
+  }
+
+  private async generateUserTokens(user: User) {
     const tokenData = await this.authRepository.generateToken(user);
     if (!tokenData) {
-      throw new Error(MESSAGE.AUTH.INVALID_CREDENTIALS);
+      throw new Error(MESSAGE.SERVER.INTERNAL_ERROR);
     }
-    const result = {
-      userInfo: user,
-      token: tokenData.token,
-      refreshToken: tokenData.refreshToken,
-    };
-    if (!result) {
-      throw new Error(MESSAGE.AUTH.INVALID_CREDENTIALS);
-    }
-    return {
-      data: result,
-      message: MESSAGE.AUTH.CREATE_SUCCESS,
-    };
+    return tokenData;
   }
 }
