@@ -1,6 +1,9 @@
 import { IAuthRepository } from "../repositories/IAuthRepository";
 import { User } from "../../domain/entities/user.entity";
-import { ICreateUserRequestDTO } from "../../domain/dtos/ICreateUserRequestDTO";
+import {
+  ICreateUserRequestDTO,
+  IUserResponseDTO,
+} from "../../domain/dtos/ICreateUserRequestDTO";
 import bcrypt from "bcryptjs";
 import { IUserRepository } from "../repositories/IUserRepository";
 import MESSAGE from "@/shared/contants/message";
@@ -11,9 +14,11 @@ export class RegisterUseCase {
     private userRepository: IUserRepository
   ) {}
 
-  async execute(
-    userData: ICreateUserRequestDTO
-  ): Promise<{ user: Omit<User, "password">; message: string }> {
+  async execute(userData: ICreateUserRequestDTO): Promise<{
+    user: IUserResponseDTO;
+    refreshToken: string;
+    accessToken: string;
+  }> {
     const existingUser = await this.userRepository.findByEmail(userData.email);
     if (existingUser) {
       throw new Error(MESSAGE.AUTH.EMAIL_ALREADY_USED);
@@ -28,12 +33,24 @@ export class RegisterUseCase {
     });
 
     const createdUser = await this.authRepository.register(user);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...userWithoutPassword } = createdUser;
-
+    const tokenData = await this.generateUserTokens(createdUser);
     return {
-      user: { ...userWithoutPassword } as Omit<User, "password">,
-      message: MESSAGE.AUTH.CREATE_SUCCESS,
+      user: {
+        id: createdUser.id,
+        name: createdUser.name,
+        email: createdUser.email.address,
+        role: createdUser.role,
+      },
+      refreshToken: tokenData.refreshToken,
+      accessToken: tokenData.token,
     };
+  }
+  private async generateUserTokens(user: User) {
+    const tokenData = await this.authRepository.generateToken(user);
+
+    if (!tokenData) {
+      throw new Error(MESSAGE.SERVER.INTERNAL_ERROR);
+    }
+    return tokenData;
   }
 }

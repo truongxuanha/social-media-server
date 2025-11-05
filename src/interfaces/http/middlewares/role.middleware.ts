@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { IRoleService } from "@/services/role.service";
 import MESSAGE from "@/shared/contants/message";
+import { Role } from "@/domain/enums/role.enum";
 
 export class RoleMiddleware {
   constructor(private roleService: IRoleService) {}
@@ -21,10 +22,10 @@ export class RoleMiddleware {
   }
 
   requireAdmin() {
-    return this.requireRole("admin");
+    return this.requireRole(Role.ADMIN);
   }
 
   requireUser() {
-    return this.requireRole("user");
+    return this.requireRole(Role.USER);
   }
 }

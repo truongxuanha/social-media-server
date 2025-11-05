@@ -11,7 +11,7 @@ export class User {
   private _password: string;
   private _createdAt: Date;
   private _updatedAt: Date;
-  private _role: string;
+  private _role: Role;
   constructor(props: IUser) {
     this._id = props.id;
     this._name = props.name;
@@ -42,7 +42,7 @@ export class User {
   get updatedAt(): Date {
     return this._updatedAt;
   }
-  get role(): string {
+  get role(): Role {
     return this._role;
   }
   static create({
@@ -72,6 +72,6 @@ export class User {
     inputPassword: string,
     passwordHash: string
   ): Promise<boolean> {
-    return bcrypt.compare(inputPassword, passwordHash);
+    return await bcrypt.compare(inputPassword, passwordHash);
   }
 }

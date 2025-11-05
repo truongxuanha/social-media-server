@@ -2,16 +2,11 @@ import { IAuthRepository } from "../repositories/IAuthRepository";
 import { User } from "../../domain/entities/user.entity";
 import { IUserRepository } from "../repositories/IUserRepository";
 import MESSAGE from "@/shared/contants/message";
-import { ICreateUserRequestDTO } from "@/domain/dtos/ICreateUserRequestDTO";
-
-interface LoginResponse {
-  data: {
-    userInfo: User;
-    accessToken: string;
-    refreshToken: string;
-  };
-  message: string;
-}
+import {
+  ICreateUserRequestDTO,
+  IUserResponseDTO,
+} from "@/domain/dtos/ICreateUserRequestDTO";
+import { LoginResponse } from "@/domain/dtos/ILoginResponseDTO";
 
 export class LoginUseCase {
   constructor(
@@ -25,11 +20,15 @@ export class LoginUseCase {
 
     return {
       data: {
-        userInfo: user,
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email.address,
+          role: user.role,
+        },
         accessToken: tokenData.token,
         refreshToken: tokenData.refreshToken,
       },
-      message: MESSAGE.AUTH.CREATE_SUCCESS,
     };
   }
 

@@ -1,4 +1,5 @@
 import { User } from "@/domain/entities/user.entity";
+import { log } from "console";
 
 export interface IRoleService {
   hasRole(user: User, requiredRole: string): boolean;
@@ -8,6 +9,7 @@ export interface IRoleService {
 
 export class RoleService implements IRoleService {
   hasRole(user: User, requiredRole: string): boolean {
+    log("Checking role for user:", user);
     return user?.role === requiredRole;
   }
 

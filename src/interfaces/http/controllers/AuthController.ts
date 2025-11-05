@@ -21,14 +21,7 @@ export class AuthController extends BaseController {
 
       const result = await this.registerUseCase.execute(userData);
 
-      const accessToken = generateToken(result.user.id);
-      const refreshToken = generateRefreshToken(result.user.id);
-      return this.created(res, {
-        data: {
-          accessToken,
-          refreshToken,
-        },
-      });
+      return this.created(res, { data: result });
     } catch (error) {
       Logger.error("Error in AuthController.register", error);
       if (error instanceof Error) {
@@ -63,12 +56,7 @@ export class AuthController extends BaseController {
     const userData: ICreateUserRequestDTO = req.body;
     try {
       const result = await this.loginUseCase.execute(userData);
-      return this.success(res, {
-        data: {
-          accessToken: result?.data.accessToken,
-          refreshToken: result?.data.refreshToken,
-        },
-      });
+      return this.success(res, { data: result });
     } catch (error) {
       if (error instanceof Error) {
         if (error.message !== MESSAGE.SERVER.INTERNAL_ERROR) {
