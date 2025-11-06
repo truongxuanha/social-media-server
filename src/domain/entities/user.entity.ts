@@ -1,6 +1,5 @@
 import { ICreateUserRequestDTO } from "../dtos/ICreateUserRequestDTO";
 import { IUpdateUserRequestDTO } from "../dtos/IUpdateUserRequestDTO";
-import { Role } from "../enums/role.enum";
 import { IUser } from "../interfaces/user.interface";
 import { Email } from "../value-objects/email.vo";
 import bcrypt from "bcryptjs";
@@ -10,8 +9,7 @@ export class User {
   private _email: Email;
   private _password: string;
   private _createdAt: Date;
-  private _updatedAt: Date;
-  private _role: Role;
+  private _updatedAt: Date | null;
   constructor(props: IUser) {
     this._id = props.id;
     this._name = props.name;
@@ -19,7 +17,6 @@ export class User {
     this._email = props.email;
     this._createdAt = props.createdAt;
     this._updatedAt = props.updatedAt;
-    this._role = props.role;
   }
 
   get id(): string {
@@ -39,25 +36,21 @@ export class User {
   get createdAt(): Date {
     return this._createdAt;
   }
-  get updatedAt(): Date {
+  get updatedAt(): Date | null {
     return this._updatedAt;
   }
-  get role(): Role {
-    return this._role;
-  }
-  static create({
+  static async create({
     email,
     name,
     password,
-    role = Role.USER,
-  }: ICreateUserRequestDTO) {
+  }: ICreateUserRequestDTO): Promise<User> {
     const newEmail = new Email({ address: email });
+    const hashedPassword = await this.hashPassword(password);
     return new User({
       id: crypto.randomUUID(),
       name,
       email: newEmail,
-      password,
-      role,
+      password: hashedPassword,
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -67,6 +60,10 @@ export class User {
       updatedUser.email = new Email({ address: updatedUser.email }).address;
     }
     return updatedUser;
+  }
+
+  static async hashPassword(password: string): Promise<string> {
+    return await bcrypt.hash(password, 10);
   }
   static async isValidPassword(
     inputPassword: string,

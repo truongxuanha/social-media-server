@@ -1,4 +1,3 @@
-import { Role } from "../enums/role.enum";
 import { Email } from "../value-objects/email.vo";
 
 export interface IUser {
@@ -7,6 +6,5 @@ export interface IUser {
   email: Email;
   password: string;
   readonly createdAt: Date;
-  updatedAt: Date;
-  role: Role;
+  updatedAt: Date | null;
 }

@@ -34,6 +34,7 @@ const MESSAGE = {
     NOT_FOUND: "error.user.not_found",
     ALREADY_EXISTS: "error.user.already_exists",
     INVALID_STATUS: "error.user.invalid_status",
+    REQUIRED_ID: "error.user.required_id",
   },
 
   SERVER: {

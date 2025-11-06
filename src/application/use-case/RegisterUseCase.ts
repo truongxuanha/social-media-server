@@ -4,9 +4,11 @@ import {
   ICreateUserRequestDTO,
   IUserResponseDTO,
 } from "../../domain/dtos/ICreateUserRequestDTO";
-import bcrypt from "bcryptjs";
 import { IUserRepository } from "../repositories/IUserRepository";
-import MESSAGE from "@/shared/contants/message";
+import {
+  EmailAlreadyUsedException,
+  InternalServerException,
+} from "@/domain/exceptions";
 
 export class RegisterUseCase {
   constructor(
@@ -21,16 +23,9 @@ export class RegisterUseCase {
   }> {
     const existingUser = await this.userRepository.findByEmail(userData.email);
     if (existingUser) {
-      throw new Error(MESSAGE.AUTH.EMAIL_ALREADY_USED);
+      throw new EmailAlreadyUsedException();
     }
-
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(userData.password, saltRounds);
-
-    const user = User.create({
-      ...userData,
-      password: hashedPassword,
-    });
+    const user = await User.create(userData);
 
     const createdUser = await this.authRepository.register(user);
     const tokenData = await this.generateUserTokens(createdUser);
@@ -39,7 +34,6 @@ export class RegisterUseCase {
         id: createdUser.id,
         name: createdUser.name,
         email: createdUser.email.address,
-        role: createdUser.role,
       },
       refreshToken: tokenData.refreshToken,
       accessToken: tokenData.token,
@@ -49,7 +43,7 @@ export class RegisterUseCase {
     const tokenData = await this.authRepository.generateToken(user);
 
     if (!tokenData) {
-      throw new Error(MESSAGE.SERVER.INTERNAL_ERROR);
+      throw new InternalServerException();
     }
     return tokenData;
   }

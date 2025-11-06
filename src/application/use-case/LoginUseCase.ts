@@ -1,9 +1,13 @@
 import { IAuthRepository } from "../repositories/IAuthRepository";
 import { User } from "../../domain/entities/user.entity";
 import { IUserRepository } from "../repositories/IUserRepository";
-import MESSAGE from "@/shared/contants/message";
-import { ICreateUserRequestDTO } from "@/domain/dtos/ICreateUserRequestDTO";
+import { ILoginRequestDTO } from "@/domain/dtos/ILoginRequestDTO";
 import { LoginResponse } from "@/domain/dtos/ILoginResponseDTO";
+import {
+  AccountNotFoundException,
+  IncorrectPasswordException,
+  InternalServerException,
+} from "@/domain/exceptions";
 
 export class LoginUseCase {
   constructor(
@@ -11,7 +15,7 @@ export class LoginUseCase {
     private userRepository: IUserRepository
   ) {}
 
-  async execute(userData: ICreateUserRequestDTO): Promise<LoginResponse> {
+  async execute(userData: ILoginRequestDTO): Promise<LoginResponse> {
     const user = await this.validateUserCredentials(userData);
     const tokenData = await this.generateUserTokens(user);
 
@@ -21,7 +25,6 @@ export class LoginUseCase {
           id: user.id,
           name: user.name,
           email: user.email.address,
-          role: user.role,
         },
         accessToken: tokenData.token,
         refreshToken: tokenData.refreshToken,
@@ -30,11 +33,11 @@ export class LoginUseCase {
   }
 
   private async validateUserCredentials(
-    userData: ICreateUserRequestDTO
+    userData: ILoginRequestDTO
   ): Promise<User> {
     const userInfo = await this.userRepository.findByEmail(userData.email);
     if (!userInfo) {
-      throw new Error(MESSAGE.AUTH.ACCOUNT_NOT_EXIST);
+      throw new AccountNotFoundException();
     }
 
     const isPasswordValid = await User.isValidPassword(
@@ -43,7 +46,7 @@ export class LoginUseCase {
     );
 
     if (!isPasswordValid) {
-      throw new Error(MESSAGE.AUTH.INCORRECT_PASSWORD);
+      throw new IncorrectPasswordException();
     }
 
     return new User(userInfo);
@@ -52,7 +55,7 @@ export class LoginUseCase {
   private async generateUserTokens(user: User) {
     const tokenData = await this.authRepository.generateToken(user);
     if (!tokenData) {
-      throw new Error(MESSAGE.SERVER.INTERNAL_ERROR);
+      throw new InternalServerException();
     }
     return tokenData;
   }

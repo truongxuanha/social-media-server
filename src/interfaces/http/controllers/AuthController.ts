@@ -1,10 +1,18 @@
 import { RegisterUseCase } from "@/application/use-case/RegisterUseCase";
 import { ICreateUserRequestDTO } from "@/domain/dtos/ICreateUserRequestDTO";
+import { ILoginRequestDTO } from "@/domain/dtos/ILoginRequestDTO";
 import MESSAGE from "@/shared/contants/message";
 import { Request, Response } from "express";
 import Logger from "@/interfaces/http/logger/logger";
 import { LoginUseCase } from "@/application/use-case/LoginUseCase";
 import { BaseController } from "./BaseController";
+import {
+  AccountNotFoundException,
+  IncorrectPasswordException,
+  EmailAlreadyUsedException,
+  InternalServerException,
+  BaseException,
+} from "@/domain/exceptions";
 
 export class AuthController extends BaseController {
   constructor(
@@ -23,46 +31,58 @@ export class AuthController extends BaseController {
       return this.created(res, { data: result });
     } catch (error) {
       Logger.error("Error in AuthController.register", error);
-      if (error instanceof Error) {
-        if (error.message === MESSAGE.AUTH.EMAIL_ALREADY_USED) {
-          return res.status(422).json({
-            message: MESSAGE.AUTH.EMAIL_ALREADY_USED,
-            errors: [
-              {
-                field: "email",
-                message: MESSAGE.AUTH.EMAIL_ALREADY_USED,
-              },
-            ],
-          });
-        }
-
-        if (error.message === MESSAGE.VALIDATION.INVALID_EMAIL_FORMAT) {
-          return this.unprocessableEntity(res, {
-            message: MESSAGE.VALIDATION.INVALID_EMAIL_FORMAT,
-            errors: [
-              {
-                field: "email",
-                message: MESSAGE.VALIDATION.INVALID_EMAIL_FORMAT,
-              },
-            ],
-          });
-        }
-      }
-      return this.serverError(res);
+      return this.handleRegisterError(error, res);
     }
   }
+
   async login(req: Request, res: Response): Promise<Response> {
-    const userData: ICreateUserRequestDTO = req.body;
     try {
+      const userData: ILoginRequestDTO = req.body;
       const result = await this.loginUseCase.execute(userData);
       return this.success(res, { data: result });
     } catch (error) {
-      if (error instanceof Error) {
-        if (error.message !== MESSAGE.SERVER.INTERNAL_ERROR) {
-          return this.unauthorized(res, MESSAGE.AUTH.INCORRECT_PASSWORD);
-        }
-      }
-      return this.serverError(res);
+      Logger.error("Error in AuthController.login", error);
+      return this.handleLoginError(error, res);
     }
+  }
+
+  private handleRegisterError(error: unknown, res: Response): Response {
+    if (error instanceof EmailAlreadyUsedException) {
+      return this.unprocessableEntity(res, {
+        message: error.message,
+        errors: [
+          {
+            field: "email",
+            message: error.message,
+          },
+        ],
+      });
+    }
+
+    if (error instanceof BaseException) {
+      return this.serverError(res, error.message);
+    }
+
+    return this.serverError(res);
+  }
+
+  private handleLoginError(error: unknown, res: Response): Response {
+    if (error instanceof AccountNotFoundException) {
+      return this.unauthorized(res, error.message);
+    }
+
+    if (error instanceof IncorrectPasswordException) {
+      return this.unauthorized(res, error.message);
+    }
+
+    if (error instanceof InternalServerException) {
+      return this.serverError(res, error.message);
+    }
+
+    if (error instanceof BaseException) {
+      return this.unauthorized(res, error.message);
+    }
+
+    return this.unauthorized(res, MESSAGE.AUTH.INVALID_CREDENTIALS);
   }
 }

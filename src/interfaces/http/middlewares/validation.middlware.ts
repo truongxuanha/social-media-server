@@ -1,6 +1,7 @@
 import MESSAGE from "@/shared/contants/message";
 import { NextFunction, Response, Request } from "express";
 import { ZodSchema, ZodError } from "zod";
+import { ResponseHelper } from "@/shared/utils/response.helper";
 
 export class ValiationMiddleware {
   validate<T>(schema: ZodSchema<T>) {
@@ -18,15 +19,13 @@ export class ValiationMiddleware {
             message: err.message,
           }));
 
-          return res.status(422).json({
+          return ResponseHelper.unprocessableEntity(res, {
             message: MESSAGE.COMMON.VALIDATION_ERROR || "Validation failed",
             errors: errors,
           });
         }
 
-        return res.status(500).json({
-          message: MESSAGE.SERVER.INTERNAL_ERROR,
-        });
+        return ResponseHelper.serverError(res);
       }
     };
   }
@@ -44,15 +43,13 @@ export class ValiationMiddleware {
             message: err.message,
           }));
 
-          return res.status(422).json({
+          return ResponseHelper.unprocessableEntity(res, {
             message: "Invalid parameters",
             errors: errors,
           });
         }
 
-        return res.status(500).json({
-          message: MESSAGE.SERVER.INTERNAL_ERROR,
-        });
+        return ResponseHelper.serverError(res);
       }
     };
   }
@@ -70,15 +67,13 @@ export class ValiationMiddleware {
             message: err.message,
           }));
 
-          return res.status(422).json({
+          return ResponseHelper.unprocessableEntity(res, {
             message: "Invalid query parameters",
             errors: errors,
           });
         }
 
-        return res.status(500).json({
-          message: MESSAGE.SERVER.INTERNAL_ERROR,
-        });
+        return ResponseHelper.serverError(res);
       }
     };
   }
@@ -87,7 +82,7 @@ export class ValiationMiddleware {
     return (req: Request, res: Response, next: NextFunction) => {
       const missing = fields.find(f => !req.body?.[f]);
       if (missing) {
-        return res.status(422).json({
+        return ResponseHelper.unprocessableEntity(res, {
           message: MESSAGE.COMMON.REQUIRED_FIELD,
           errors: [
             {
