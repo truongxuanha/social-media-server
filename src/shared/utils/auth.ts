@@ -3,7 +3,7 @@ import { envRequired } from "./env";
 import { User } from "@/domain/entities/user.entity";
 
 export const generateToken = (user: Omit<User, "password">) => {
-  return jwt.sign({ id: user.id, role: user.role }, envRequired("JWT_SECRET"), {
+  return jwt.sign({ id: user.id }, envRequired("JWT_SECRET"), {
     expiresIn: "1h",
   });
 };

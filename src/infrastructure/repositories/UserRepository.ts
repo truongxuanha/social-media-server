@@ -20,7 +20,6 @@ export class UserRepository implements IUserRepository {
       password: user.password,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
-      role: user.role,
     });
   }
 
@@ -38,7 +37,6 @@ export class UserRepository implements IUserRepository {
       password: user.password,
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,
-      role: user.role,
     });
   }
 }
