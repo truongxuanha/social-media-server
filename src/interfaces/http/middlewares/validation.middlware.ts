@@ -1,6 +1,6 @@
 import MESSAGE from "@/shared/contants/message";
 import { NextFunction, Response, Request } from "express";
-import { z, ZodSchema, ZodError } from "zod";
+import { ZodSchema, ZodError } from "zod";
 
 export class ValiationMiddleware {
   validate<T>(schema: ZodSchema<T>) {

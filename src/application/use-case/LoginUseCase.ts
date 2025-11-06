@@ -2,10 +2,7 @@ import { IAuthRepository } from "../repositories/IAuthRepository";
 import { User } from "../../domain/entities/user.entity";
 import { IUserRepository } from "../repositories/IUserRepository";
 import MESSAGE from "@/shared/contants/message";
-import {
-  ICreateUserRequestDTO,
-  IUserResponseDTO,
-} from "@/domain/dtos/ICreateUserRequestDTO";
+import { ICreateUserRequestDTO } from "@/domain/dtos/ICreateUserRequestDTO";
 import { LoginResponse } from "@/domain/dtos/ILoginResponseDTO";
 
 export class LoginUseCase {

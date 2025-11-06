@@ -3,7 +3,6 @@ import { ICreateUserRequestDTO } from "@/domain/dtos/ICreateUserRequestDTO";
 import MESSAGE from "@/shared/contants/message";
 import { Request, Response } from "express";
 import Logger from "@/interfaces/http/logger/logger";
-import { generateToken, generateRefreshToken } from "@/shared/utils/auth";
 import { LoginUseCase } from "@/application/use-case/LoginUseCase";
 import { BaseController } from "./BaseController";
 
