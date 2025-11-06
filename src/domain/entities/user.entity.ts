@@ -52,7 +52,7 @@ export class User {
       email: newEmail,
       password: hashedPassword,
       createdAt: new Date(),
-      updatedAt: new Date(),
+      updatedAt: null,
     });
   }
   static update(updatedUser: IUpdateUserRequestDTO) {
