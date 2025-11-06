@@ -1,13 +1,13 @@
-import { IAuthRepository } from "../repositories/IAuthRepository";
+import { IAuthRepository } from "../../domain/repositories/auth.repository";
 import { User } from "../../domain/entities/user.entity";
-import { IUserRepository } from "../repositories/IUserRepository";
-import { ILoginRequestDTO } from "@/domain/dtos/ILoginRequestDTO";
+import { IUserRepository } from "../../domain/repositories/user.repository";
+import { ILoginRequestDTO } from "@/domain/dtos/login-request.dto";
+import { LoginResponse } from "@/domain/dtos/login-response-dto";
 import {
   AccountNotFoundException,
   IncorrectPasswordException,
   InternalServerException,
 } from "@/domain/exceptions";
-import { LoginResponse } from "@/domain/dtos/ILoginResponseDTO";
 
 export class LoginUseCase {
   constructor(
@@ -20,13 +20,11 @@ export class LoginUseCase {
     const tokenData = await this.generateUserTokens(user);
 
     return {
-      user: {
-        id: user.id,
-        name: user.name,
-        email: user.email.address,
+      data: {
+        user: user.toJSON(),
+        accessToken: tokenData.token,
+        refreshToken: tokenData.refreshToken,
       },
-      accessToken: tokenData.token,
-      refreshToken: tokenData.refreshToken,
     };
   }
 
@@ -47,7 +45,7 @@ export class LoginUseCase {
       throw new IncorrectPasswordException();
     }
 
-    return new User(userInfo);
+    return userInfo;
   }
 
   private async generateUserTokens(user: User) {

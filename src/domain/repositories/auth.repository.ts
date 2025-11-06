@@ -1,4 +1,4 @@
-import { User } from "../../domain/entities/user.entity";
+import { User } from "../entities/user.entity";
 
 export interface IAuthRepository {
   register(user: User): Promise<User>;

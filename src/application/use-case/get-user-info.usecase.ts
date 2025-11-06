@@ -1,4 +1,5 @@
-import { IUserRepository } from "../repositories/IUserRepository";
+import { IUserRepository } from "../../domain/repositories/user.repository";
+import { IUserSerialized } from "@/domain/interfaces/user.interface";
 
 export class GetUserInfoUseCase {
   constructor(private userRepository: IUserRepository) {}
@@ -6,12 +7,7 @@ export class GetUserInfoUseCase {
   async execute(userId: string): Promise<{
     success: boolean;
     message: string;
-    data?: {
-      id: string;
-      name: string;
-      email: string;
-      createdAt: Date;
-    };
+    data?: IUserSerialized;
   }> {
     const user = await this.userRepository.findById(userId);
 
@@ -25,12 +21,7 @@ export class GetUserInfoUseCase {
     return {
       success: true,
       message: "Lấy thông tin người dùng thành công",
-      data: {
-        id: user.id,
-        name: user.name,
-        email: user.email.address,
-        createdAt: user.createdAt,
-      },
+      data: user.toJSON(),
     };
   }
 }

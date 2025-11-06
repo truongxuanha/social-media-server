@@ -1,10 +1,10 @@
-import { IAuthRepository } from "../repositories/IAuthRepository";
+import { IAuthRepository } from "../../domain/repositories/auth.repository";
 import { User } from "../../domain/entities/user.entity";
 import {
   ICreateUserRequestDTO,
-  IUserResponseDTO,
-} from "../../domain/dtos/ICreateUserRequestDTO";
-import { IUserRepository } from "../repositories/IUserRepository";
+  IUserSerialized,
+} from "../../domain/dtos/create-user-request.dto";
+import { IUserRepository } from "../../domain/repositories/user.repository";
 import {
   EmailAlreadyUsedException,
   InternalServerException,
@@ -17,7 +17,7 @@ export class RegisterUseCase {
   ) {}
 
   async execute(userData: ICreateUserRequestDTO): Promise<{
-    user: IUserResponseDTO;
+    user: IUserSerialized;
     refreshToken: string;
     accessToken: string;
   }> {
@@ -30,11 +30,7 @@ export class RegisterUseCase {
     const createdUser = await this.authRepository.register(user);
     const tokenData = await this.generateUserTokens(createdUser);
     return {
-      user: {
-        id: createdUser.id,
-        name: createdUser.name,
-        email: createdUser.email.address,
-      },
+      user: createdUser.toJSON(),
       refreshToken: tokenData.refreshToken,
       accessToken: tokenData.token,
     };

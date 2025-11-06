@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { User } from "../../domain/entities/user.entity";
 import { Email } from "../../domain/value-objects/email.vo";
-import { IAuthRepository } from "@/application/repositories/IAuthRepository";
+import { IAuthRepository } from "@/domain/repositories/auth.repository";
 import { generateRefreshToken, generateToken } from "@/shared/utils/auth";
 
 export class AuthRepository implements IAuthRepository {
@@ -11,7 +11,7 @@ export class AuthRepository implements IAuthRepository {
     const createdUser = await this.prisma.user.create({
       data: {
         name: user.name,
-        email: user.email.address,
+        email: user.email,
         password: user.password,
       },
     });
@@ -21,8 +21,8 @@ export class AuthRepository implements IAuthRepository {
       name: createdUser.name,
       email: new Email({ address: createdUser.email }),
       password: createdUser.password,
-      createdAt: createdUser.createdAt,
-      updatedAt: createdUser.updatedAt,
+      createdAt: createdUser.createdAt ?? new Date(),
+      updatedAt: null,
     });
   }
   async generateToken(

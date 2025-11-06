@@ -1,6 +1,6 @@
-import { ICreateUserRequestDTO } from "../dtos/ICreateUserRequestDTO";
-import { IUpdateUserRequestDTO } from "../dtos/IUpdateUserRequestDTO";
-import { IUser } from "../interfaces/user.interface";
+import { ICreateUserRequestDTO } from "../dtos/create-user-request.dto";
+import { IUpdateUserRequestDTO } from "../dtos/update-user-request.dto";
+import { IUser, IUserSerialized } from "../interfaces/user.interface";
 import { Email } from "../value-objects/email.vo";
 import bcrypt from "bcryptjs";
 export class User {
@@ -26,8 +26,8 @@ export class User {
     return this._name;
   }
 
-  get email(): Email {
-    return this._email;
+  get email(): string {
+    return this._email.address;
   }
 
   get password(): string {
@@ -70,5 +70,15 @@ export class User {
     passwordHash: string
   ): Promise<boolean> {
     return await bcrypt.compare(inputPassword, passwordHash);
+  }
+
+  toJSON(): IUserSerialized {
+    return {
+      id: this._id,
+      name: this._name,
+      email: this._email.address,
+      createdAt: this._createdAt,
+      updatedAt: this._updatedAt,
+    };
   }
 }

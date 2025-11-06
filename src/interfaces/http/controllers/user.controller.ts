@@ -1,8 +1,7 @@
-import { GetUserInfoUseCase } from "@/application/use-case/GetUserInfoUseCase";
+import { GetUserInfoUseCase } from "@/application/use-case/get-user-info.usecase";
 import { Request, Response } from "express";
 import Logger from "@/interfaces/http/logger/logger";
-import { BaseController } from "./BaseController";
-import MESSAGE from "@/shared/contants/message";
+import { BaseController } from "./base.controller";
 
 export class UserController extends BaseController {
   constructor(private getUserInfoUseCase: GetUserInfoUseCase) {
@@ -11,14 +10,12 @@ export class UserController extends BaseController {
 
   async getUserInfo(req: Request, res: Response): Promise<Response> {
     try {
-      const userId = req.params.id;
-
-      if (!userId) {
-        return this.handleValidationError(res);
+      const user = (req as any).user;
+      if (!user || !user.id) {
+        return this.unauthorized(res);
       }
 
-      const result = await this.getUserInfoUseCase.execute(userId);
-
+      const result = await this.getUserInfoUseCase.execute(user.id);
       if (!result.success) {
         return this.notFound(res, result.message);
       }
@@ -28,16 +25,5 @@ export class UserController extends BaseController {
       Logger.error("Error in UserController.getUserInfo", error);
       return this.serverError(res);
     }
-  }
-
-  private handleValidationError(res: Response): Response {
-    return this.unprocessableEntity(res, {
-      errors: [
-        {
-          field: "id",
-          message: MESSAGE.USER.REQUIRED_ID,
-        },
-      ],
-    });
   }
 }

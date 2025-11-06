@@ -15,5 +15,9 @@ expressConfig(app);
 
 app.use(router);
 
+// Error handler middleware phải được đặt sau tất cả routes
+import { ErrorMiddleware } from "./interfaces/http/middlewares/error.middleware";
+app.use(ErrorMiddleware.handle());
+
 serverConfig(app, configs).startServer();
 export { app, server };

@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { User } from "../../domain/entities/user.entity";
 import { Email } from "../../domain/value-objects/email.vo";
-import { IUserRepository } from "@/application/repositories/IUserRepository";
+import { IUserRepository } from "@/domain/repositories/user.repository";
 
 export class UserRepository implements IUserRepository {
   constructor(private prisma: PrismaClient) {}
@@ -18,7 +18,7 @@ export class UserRepository implements IUserRepository {
       name: user.name,
       email: new Email({ address: user.email }),
       password: user.password,
-      createdAt: user.createdAt,
+      createdAt: user.createdAt || new Date(),
       updatedAt: user.updatedAt,
     });
   }
@@ -35,7 +35,7 @@ export class UserRepository implements IUserRepository {
       name: user.name,
       email: new Email({ address: user.email }),
       password: user.password,
-      createdAt: user.createdAt,
+      createdAt: user.createdAt || new Date(),
       updatedAt: user.updatedAt,
     });
   }
