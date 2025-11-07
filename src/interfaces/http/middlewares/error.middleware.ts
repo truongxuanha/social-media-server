@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import { AppError } from "@/domain/errors/app.error";
 import { BaseException } from "@/domain/exceptions";
 import { ValidationException } from "@/domain/exceptions/validation.exception";
@@ -8,18 +8,22 @@ import MESSAGE from "@/shared/contants/message";
 
 export class ErrorMiddleware {
   static handle() {
-    return (error: Error | AppError | unknown, res: Response): Response => {
+    return (
+      error: Error | AppError | unknown,
+      req: Request,
+      res: Response,
+      _next: NextFunction
+    ): Response => {
       Logger.error("Error occurred:", error);
-
-      if (error instanceof BaseException) {
-        return ErrorMiddleware.handleAppError(error, res);
-      }
-
       if (error instanceof ValidationException) {
         return ResponseHelper.unprocessableEntity(res, {
           message: error.message,
           errors: error.errors,
         });
+      }
+
+      if (error instanceof BaseException) {
+        return ErrorMiddleware.handleAppError(error, res);
       }
 
       if (error instanceof AppError) {

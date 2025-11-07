@@ -1,27 +1,17 @@
+import { NotFoundException } from "@/domain/exceptions";
 import { IUserRepository } from "../../domain/repositories/user.repository";
 import { IUserSerialized } from "@/domain/interfaces/user.interface";
+import MESSAGE from "@/shared/contants/message";
 
 export class GetUserInfoUseCase {
   constructor(private userRepository: IUserRepository) {}
 
-  async execute(userId: string): Promise<{
-    success: boolean;
-    message: string;
-    data?: IUserSerialized;
-  }> {
+  async execute(userId: string): Promise<IUserSerialized> {
     const user = await this.userRepository.findById(userId);
-
     if (!user) {
-      return {
-        success: false,
-        message: "Không tìm thấy người dùng",
-      };
+      throw new NotFoundException(MESSAGE.USER.NOT_FOUND);
     }
 
-    return {
-      success: true,
-      message: "Lấy thông tin người dùng thành công",
-      data: user.toJSON(),
-    };
+    return user.toJSON();
   }
 }

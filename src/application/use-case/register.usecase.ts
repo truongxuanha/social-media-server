@@ -28,19 +28,14 @@ export class RegisterUseCase {
     const user = await User.create(userData);
 
     const createdUser = await this.authRepository.register(user);
-    const tokenData = await this.generateUserTokens(createdUser);
+    const tokenData = await this.authRepository.generateToken(createdUser);
+    if (!tokenData) {
+      throw new InternalServerException();
+    }
     return {
       user: createdUser.toJSON(),
       refreshToken: tokenData.refreshToken,
       accessToken: tokenData.token,
     };
-  }
-  private async generateUserTokens(user: User) {
-    const tokenData = await this.authRepository.generateToken(user);
-
-    if (!tokenData) {
-      throw new InternalServerException();
-    }
-    return tokenData;
   }
 }

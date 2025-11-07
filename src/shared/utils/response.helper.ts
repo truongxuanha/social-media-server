@@ -56,5 +56,15 @@ export class ResponseHelper {
   ) {
     return res.status(422).json(data);
   }
+  static error<T>(
+    res: Response,
+    statusCode: number,
+    message?: string,
+    errors?: T
+  ) {
+    return res.status(statusCode).json({
+      message: message || MESSAGE.COMMON.SERVER_ERROR,
+      errors: errors,
+    });
+  }
 }
-

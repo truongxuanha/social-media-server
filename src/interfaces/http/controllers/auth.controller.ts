@@ -13,15 +13,31 @@ export class AuthController extends BaseController {
     super();
   }
 
-  async register(req: Request, res: Response): Promise<Response> {
+  async register(
+    req: Request,
+    res: Response,
+    next: any
+  ): Promise<Response | Error> {
     const userData: ICreateUserRequestDTO = req.body;
-    const result = await this.registerUseCase.execute(userData);
-    return this.created(res, { data: result });
+    try {
+      const result = await this.registerUseCase.execute(userData);
+      return this.created(res, result);
+    } catch (error) {
+      return next(error);
+    }
   }
 
-  async login(req: Request, res: Response): Promise<Response> {
+  async login(
+    req: Request,
+    res: Response,
+    next: any
+  ): Promise<Response | Error> {
     const userData: ILoginRequestDTO = req.body;
-    const result = await this.loginUseCase.execute(userData);
-    return this.success(res, { data: result });
+    try {
+      const result = await this.loginUseCase.execute(userData);
+      return this.success(res, result);
+    } catch (error) {
+      return next(error);
+    }
   }
 }

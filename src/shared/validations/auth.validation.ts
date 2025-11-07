@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { Role } from "@/domain/enums/role.enum";
 
 export const registerSchema = z.object({
   name: z
@@ -16,8 +15,6 @@ export const registerSchema = z.object({
     .string({ message: "Password is string" })
     .min(6, "Password must be at least 6 characters")
     .max(100, "Password must be less than 100 characters"),
-
-  role: z.nativeEnum(Role, { message: "Role is not valid" }).optional(),
 });
 
 export const loginSchema = z.object({

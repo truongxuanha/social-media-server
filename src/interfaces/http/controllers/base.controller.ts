@@ -43,4 +43,12 @@ export class BaseController {
   ) {
     return ResponseHelper.unprocessableEntity(res, data);
   }
+  protected error<T>(
+    res: Response,
+    statusCode: number,
+    message?: string,
+    errors?: T
+  ) {
+    return ResponseHelper.error(res, statusCode, message, errors);
+  }
 }
