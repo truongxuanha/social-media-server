@@ -52,10 +52,6 @@ export class ErrorMiddleware {
     const statusCode = error.statusCode || 500;
     const message = error.message || MESSAGE.SERVER.INTERNAL_ERROR;
 
-    if (process.env.NODE_ENV === "development") {
-      Logger.error("Error stack:", error.stack);
-    }
-
     switch (statusCode) {
       case 400:
         return ResponseHelper.badRequest(res, message);
