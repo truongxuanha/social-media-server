@@ -2,9 +2,7 @@ import { IUserSerialized } from "../interfaces/user.interface";
 import { BaseResponseDTO } from "./base.dto";
 
 export type LoginResponse = BaseResponseDTO<{
-  user: ILoginResponseSerialized;
+  user: IUserSerialized;
   accessToken: string;
   refreshToken: string;
 }>;
-
-export type ILoginResponseSerialized = IUserSerialized;

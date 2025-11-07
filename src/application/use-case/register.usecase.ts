@@ -2,7 +2,7 @@ import { IAuthRepository } from "../../domain/repositories/auth.repository";
 import { User } from "../../domain/entities/user.entity";
 import {
   ICreateUserRequestDTO,
-  IUserSerialized,
+  RegisterResponseDTO,
 } from "../../domain/dtos/create-user-request.dto";
 import { IUserRepository } from "../../domain/repositories/user.repository";
 import {
@@ -16,11 +16,7 @@ export class RegisterUseCase {
     private userRepository: IUserRepository
   ) {}
 
-  async execute(userData: ICreateUserRequestDTO): Promise<{
-    user: IUserSerialized;
-    refreshToken: string;
-    accessToken: string;
-  }> {
+  async execute(userData: ICreateUserRequestDTO): Promise<RegisterResponseDTO> {
     const existingUser = await this.userRepository.findByEmail(userData.email);
     if (existingUser) {
       throw new EmailAlreadyUsedException();
@@ -33,9 +29,11 @@ export class RegisterUseCase {
       throw new InternalServerException();
     }
     return {
-      user: createdUser.toJSON(),
-      refreshToken: tokenData.refreshToken,
-      accessToken: tokenData.token,
+      data: {
+        user: createdUser.toJSON(),
+        refreshToken: tokenData.refreshToken,
+        accessToken: tokenData.token,
+      },
     };
   }
 }

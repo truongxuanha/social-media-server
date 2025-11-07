@@ -6,7 +6,7 @@ export class BaseController {
     return ResponseHelper.success(res, dto);
   }
 
-  protected created<T>(res: Response, data: T) {
+  protected created<T>(res: Response, data: { data: T }) {
     return ResponseHelper.created(res, data);
   }
 

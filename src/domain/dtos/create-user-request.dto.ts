@@ -1,10 +1,16 @@
-import { BaseDTO } from "./base.dto";
+import { BaseDTO, BaseResponseDTO } from "./base.dto";
 
 export interface ICreateUserRequestDTO {
   name: string;
   email: string;
   password: string;
 }
+
+export type RegisterResponseDTO = BaseResponseDTO<{
+  user: IUserSerialized;
+  accessToken: string;
+  refreshToken: string;
+}>;
 
 export interface IUserResponseDTO extends BaseDTO {
   name: string;
