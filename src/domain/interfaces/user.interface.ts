@@ -1,11 +1,18 @@
 import { Email } from "../value-objects/email.vo";
 
 export interface IUser {
-  readonly id: string;
+  id: string;
   name: string;
   email: Email;
   password: string;
-  readonly createdAt: Date;
-  updatedAt: Date;
-  role: string;
+  createdAt: Date;
+  updatedAt: Date | null;
+}
+
+export interface IUserSerialized {
+  id: string;
+  name: string;
+  email: string;
+  createdAt: Date;
+  updatedAt: Date | null;
 }

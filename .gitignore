@@ -9,3 +9,4 @@ principle_solid.md
 /docker
 logs
 *.log
+*.tsbuildinfo

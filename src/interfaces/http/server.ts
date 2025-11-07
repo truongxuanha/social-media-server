@@ -3,7 +3,7 @@ import { createTerminus } from "@godaddy/terminus";
 import { Application } from "express";
 import path from "path";
 import express from "express";
-import Logger from "@/shared/utils/logger";
+import Logger from "@/interfaces/http/logger/logger";
 
 export default function serverConfig(app: Application, config: any) {
   async function healthCheck() {

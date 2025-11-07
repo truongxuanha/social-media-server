@@ -6,9 +6,7 @@ export const initializeSocketServer = (io: any) => {
   });
 
   io.on("connection", (socket: Socket) => {
-
     // Handle disconnection
-    socket.on("disconnect", () => {
-    });
+    socket.on("disconnect", () => {});
   });
 };

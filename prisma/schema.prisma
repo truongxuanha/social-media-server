@@ -7,14 +7,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserVerifyStatus {
+  Unverified
+  Verified
+  Banned
+}
+
 model User {
-  id        String   @id @default(uuid()) @map("_id")
-  name      String
-  email     String   @unique
-  avatar    String?
-  password  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  role      String   @default("USER") @map("role")
+  id                  String           @id @default(uuid()) @map("_id")
+  name                String
+  email               String           @unique
+  dateOfBirth         DateTime?        @map("date_of_birth")
+  password            String
+  createdAt           DateTime?        @default(now()) @map("created_at")
+  updatedAt           DateTime?        @updatedAt @map("updated_at")
+  emailVerifyToken    String?          @default("") @map("email_verify_token")
+  forgotPasswordToken String?          @default("") @map("forgot_password_token")
+  verify              UserVerifyStatus @default(Unverified)
+  bio                 String?
+  location            String?
+  website             String?
+  username            String?
+  avatar              String?
+  coverPhoto          String?          @map("cover_photo")
+
   @@map("user")
 }

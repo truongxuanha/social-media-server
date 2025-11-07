@@ -1,5 +1,5 @@
 import { createClient, RedisClientType } from "redis";
-import Logger from "@/shared/utils/logger";
+import Logger from "@/interfaces/http/logger/logger";
 
 export default function connection(redis: RedisClientType, config: any) {
   const createRedisClient = function createRedisClient() {

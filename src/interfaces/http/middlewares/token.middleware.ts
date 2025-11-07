@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import { IJwtService } from "@/services/jwt.service";
 import MESSAGE from "@/shared/contants/message";
-import Logger from "@/shared/utils/logger";
+import Logger from "@/interfaces/http/logger/logger";
+import { ResponseHelper } from "@/shared/utils/response.helper";
 
 export class TokenMiddleware {
   constructor(private jwtService: IJwtService) {}
@@ -34,16 +35,10 @@ export class TokenMiddleware {
   }
 
   private sendUnauthorized(res: Response) {
-    return res.status(401).json({
-      success: false,
-      message: MESSAGE.AUTH.UNAUTHORIZED,
-    });
+    return ResponseHelper.unauthorized(res);
   }
 
   private sendForbidden(res: Response) {
-    return res.status(403).json({
-      success: false,
-      message: MESSAGE.AUTH.TOKEN_INVALID,
-    });
+    return ResponseHelper.forbidden(res, MESSAGE.AUTH.TOKEN_INVALID);
   }
 }
