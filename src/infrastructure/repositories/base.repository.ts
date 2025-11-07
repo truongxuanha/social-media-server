@@ -3,7 +3,7 @@ import { IBaseRepository } from "@/domain/repositories/base.repository";
 
 export interface BaseEntity {
   createdAt?: Date;
-  updatedAt?: Date;
+  updatedAt?: Date | null;
 }
 
 export interface PrismaModel<TEntity> {
@@ -32,9 +32,7 @@ export abstract class BaseRepository<
     protected idFieldName: string
   ) {}
   protected buildWhereClause(filter?: TFilter): Record<string, unknown> {
-    console.log("filter_01_01===", filter);
     const baseFilter: Record<string, unknown> = filter ? { ...filter } : {};
-    console.log("filter_01_02===", baseFilter);
     return baseFilter;
   }
 
